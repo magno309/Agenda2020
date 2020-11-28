@@ -20,13 +20,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/txtNombre"
+        android:id="@+id/txtNombreNota"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
         android:ems="10"
-        android:hint="Nombre"
+        android:hint="@string/txtNombre"
         android:importantForAutofill="no"
         android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
@@ -44,10 +44,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtNombre" />
+        app:layout_constraintTop_toBottomOf="@+id/txtNombreNota" />
 
     <EditText
-        android:id="@+id/txtDescripcion"
+        android:id="@+id/txtDescripcionNota"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
@@ -55,7 +55,7 @@
         android:layout_marginEnd="5dp"
         android:ems="10"
         android:gravity="start|top"
-        android:hint="Descripcion"
+        android:hint="@string/txtDescripcion"
         android:importantForAutofill="no"
         android:inputType="textMultiLine"
         app:layout_constraintEnd_toEndOf="parent"
@@ -72,22 +72,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.056"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtDescripcion" />
+        app:layout_constraintTop_toBottomOf="@+id/txtDescripcionNota" />
 
     <ImageButton
-        android:id="@+id/btnCamera"
+        android:id="@+id/btnCameraNotas"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:layout_marginStart="40dp"
+        android:layout_marginStart="30dp"
         android:layout_marginTop="5dp"
+        android:contentDescription="@string/btnCamara"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/textView14"
-        app:layout_constraintTop_toBottomOf="@+id/txtDescripcion"
+        app:layout_constraintTop_toBottomOf="@+id/txtDescripcionNota"
         app:srcCompat="@drawable/camera_64x64" />
 
     <ImageButton
-        android:id="@+id/btnVoice"
+        android:id="@+id/btnVoiceNotas"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginStart="10dp"
@@ -95,34 +96,42 @@
         android:contentDescription="@string/btnVoice"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/btnCamera"
-        app:layout_constraintTop_toBottomOf="@+id/txtDescripcion"
+        app:layout_constraintStart_toEndOf="@+id/btnCameraNotas"
+        app:layout_constraintTop_toBottomOf="@+id/txtDescripcionNota"
         app:srcCompat="@drawable/mic_2_64x64" />
 
     <ImageButton
-        android:id="@+id/btnVideo"
+        android:id="@+id/btnVideoNotas"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
-        android:layout_marginEnd="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/btnVoice"
-        app:layout_constraintTop_toBottomOf="@+id/txtDescripcion"
+        android:contentDescription="@string/btnVideo"
+        app:layout_constraintStart_toEndOf="@+id/btnVoiceNotas"
+        app:layout_constraintTop_toBottomOf="@+id/txtDescripcionNota"
         app:srcCompat="@drawable/video_64x64" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btnAgregarNota"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:text="@string/btnAgregarNota"
         app:backgroundTint="@color/teal_700"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.515"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtDescripcion"
-        app:layout_constraintVertical_bias="0.97" />
+        app:layout_constraintTop_toBottomOf="@+id/rvMultimediaNotas" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvMultimediaNotas"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnCameraNotas" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

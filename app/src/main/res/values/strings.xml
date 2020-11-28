@@ -1,5 +1,11 @@
 <resources>
     <string name="app_name">Agenda</string>
     <string name="tab_text_1">Notas</string>
-    <string name="tab_text_2">Tareas</string>
+    <string name="tab_text_2">Tareas</string>s
+    <string name="lblNombre">Nombre</string>
+    <string name="lblDescripcion">Descripción</string>
+    <string name="lblMultimedia">Agregar multimedia:</string>
+    <string name="btnVoice">Graba audio</string>
+    <string name="btnAgregarNota">Agregar nota</string>
+
 </resources>

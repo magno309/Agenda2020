@@ -8,9 +8,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.example.agenda.Notas;
+import com.example.agenda.NotasFragment;
 import com.example.agenda.R;
-import com.example.agenda.Tareas;
+import com.example.agenda.TareasFragment;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
@@ -34,10 +34,10 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         Fragment fragment = null;
         switch (position){
             case 0:
-                fragment = Notas.newInstance();
+                fragment = NotasFragment.newInstance();
                 break;
             case 1:
-                fragment = Tareas.newInstance();
+                fragment = TareasFragment.newInstance();
                 break;
         }
         return fragment;

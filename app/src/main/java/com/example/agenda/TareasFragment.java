@@ -10,17 +10,17 @@ import android.view.ViewGroup;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link Tareas#newInstance} factory method to
+ * Use the {@link TareasFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Tareas extends Fragment {
+public class TareasFragment extends Fragment {
 
-    public Tareas() {
+    public TareasFragment() {
         // Required empty public constructor
     }
 
-    public static Tareas newInstance() {
-        Tareas fragment = new Tareas();
+    public static TareasFragment newInstance() {
+        TareasFragment fragment = new TareasFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;

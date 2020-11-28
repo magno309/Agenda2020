@@ -5,7 +5,7 @@
     android:id="@+id/actAgregarNota"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AgregarNota">
+    tools:context=".AgregarNotaActivity">
 
     <TextView
         android:id="@+id/textView12"

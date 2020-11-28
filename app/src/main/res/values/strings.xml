@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Agenda</string>
+    <string name="tab_text_1">Notas</string>
+    <string name="tab_text_2">Tareas</string>
+</resources>

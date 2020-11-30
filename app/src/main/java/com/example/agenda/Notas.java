@@ -4,9 +4,12 @@ public class Notas {
     private int notaId;
     private String Nombre;
     private String Descripcion;
+    private String FechaHora;
     private String UriFoto;
     private String UriVideo;
     private String UriVoz;
+
+    public int getNotaId() { return notaId; }
 
     public void setNotaId(int notaId) {
         this.notaId = notaId;
@@ -27,6 +30,10 @@ public class Notas {
     public void setDescripcion(String descripcion) {
         Descripcion = descripcion;
     }
+
+    public String getFechaHora() { return FechaHora; }
+
+    public void setFechaHora(String fechaHora) { FechaHora = fechaHora; }
 
     public String getUriFoto() {
         return UriFoto;

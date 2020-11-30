@@ -15,7 +15,8 @@ public class NotasDBHelper extends SQLiteOpenHelper {
             NotasDatabase.COLUMN_NAME_COL2 + " text," +
             NotasDatabase.COLUMN_NAME_COL3 + " text," +
             NotasDatabase.COLUMN_NAME_COL4 + " text," +
-            NotasDatabase.COLUMN_NAME_COL5 + " text)";
+            NotasDatabase.COLUMN_NAME_COL5 + " text," +
+            NotasDatabase.COLUMN_NAME_COL6 + " text)";
     private static final String DELETE_NOTAS_TABLE = "DROP TABLE IF EXISTS " + NotasDatabase.TABLE_NAME;
     public NotasDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

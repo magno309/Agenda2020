@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cv_user"
+    android:id="@+id/layout_nota"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_marginTop="@dimen/appbar_padding"
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="5dp"
+    android:background="@drawable/fondo_nota">
 
-    >
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -28,9 +30,9 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="3dp"
-            android:background="@android:color/darker_gray"
+            android:background="@android:color/black"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="txt_Nombre_Nota" />
+            app:layout_constraintTop_toBottomOf="@+id/txt_Nombre_Nota" />
 
         <TextView
             android:id="@+id/txt_Descripción_Nota"
@@ -39,8 +41,18 @@
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:text="Descripción Nota"
+            android:textSize="18sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txt_Nombre_Nota" />
+
+        <View
+            android:id="@+id/separador2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="3dp"
+            android:background="@android:color/black"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_Descripción_Nota" />
 
         <TextView
             android:id="@+id/txt_FechaYHora_Nota"
@@ -51,14 +63,14 @@
             android:text="Fecha y Hora Nota"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txt_Descripción_Nota" />
+
         <ImageView
-            android:id="@+id/btn_menu_nota"
+            android:id="@+id/btn_eliminar_nota"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:src="@drawable/ic_menu_3_puntos" />
+            android:src="@drawable/ic_delete"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+</LinearLayout>

@@ -1,19 +1,33 @@
 package com.example.agenda;
 
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link TareasFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class TareasFragment extends Fragment {
+
+    TareasDBHelper dbHelper;
+    private RecyclerView recyclerView;
+    private LinearLayoutManager layoutManager;
+    private AdaptadorTareas adaptadorTareas;
+    MainActivity mainActivity;
+    SQLiteDatabase db;
+    List<Tareas> listaTareas;
 
     public TareasFragment() {
         // Required empty public constructor
@@ -34,7 +48,45 @@ public class TareasFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tareas, container, false);
+        View view =  inflater.inflate(R.layout.fragment_tareas, container, false);
+        recyclerView = view.findViewById(R.id.rvTareas);
+        layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+
+        dbHelper = new TareasDBHelper(getActivity());
+        db = dbHelper.getReadableDatabase();
+        listaTareas = new ArrayList<>();
+
+        Cursor cursor = db.query(NotasDB.TareasDatabase.TABLE_NAME, null, null, null, null, null, null);
+        if(cursor != null && cursor.getCount() != 0){
+            listaTareas.clear();
+            while(cursor.moveToNext()){
+                Tareas tarea = new Tareas();
+                tarea.setTareaId(cursor.getInt(cursor.getColumnIndex(NotasDB.TareasDatabase._ID)));
+                tarea.setNombre(cursor.getString(cursor.getColumnIndex(NotasDB.NotasDatabase.COLUMN_NAME_COL1)));
+                tarea.setDescripcion(cursor.getString(cursor.getColumnIndex(NotasDB.NotasDatabase.COLUMN_NAME_COL2)));
+                tarea.setUriFoto(cursor.getString(cursor.getColumnIndex(NotasDB.NotasDatabase.COLUMN_NAME_COL3)));
+                tarea.setUriVideo(cursor.getString(cursor.getColumnIndex(NotasDB.NotasDatabase.COLUMN_NAME_COL4)));
+                tarea.setUriVoz(cursor.getString(cursor.getColumnIndex(NotasDB.NotasDatabase.COLUMN_NAME_COL5)));
+                listaTareas.add(tarea);
+            }
+            cursor.close();
+            adaptadorTareas = new AdaptadorTareas(getActivity(), listaTareas);
+            adaptadorTareas.setOnClickListener(v -> {
+                Intent intent = new Intent(getActivity(), AgregarTareaActivity.class);
+                intent.putExtra("IdTarea", recyclerView.getChildAdapterPosition(v));
+                getActivity().startActivity(intent);
+            });
+        }
+        recyclerView.setAdapter(adaptadorTareas);
+        return view;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if(context instanceof MainActivity){
+            this.mainActivity = (MainActivity) context;
+        }
     }
 }

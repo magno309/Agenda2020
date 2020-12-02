@@ -15,5 +15,8 @@
     <string name="btnAgregarFecha">Agregar fecha</string>
     <string name="btnVideo">Tomar video</string>
     <string name="btnCamara">Tomar foto</string>
-
+    <string name="btnFecha">Boton para seleccionar fecha</string>
+    <string name="btnHora">Botón para seleccionar hora</string>
+    <string name="txtFechaTareas">dd/MM/yyyy</string>
+    <string name="txtHora">HH:MM</string>
 </resources>

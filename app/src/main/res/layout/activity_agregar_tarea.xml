@@ -8,10 +8,10 @@
 
     <TextView
         android:id="@+id/textView12"
-        android:layout_width="0dp"
+        android:layout_width="402dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="1dp"
         android:layout_marginEnd="5dp"
         android:text="@string/lblNombre"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,20 +20,19 @@
 
     <TextView
         android:id="@+id/textView13"
-        android:layout_width="0dp"
+        android:layout_width="402dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="1dp"
+        android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
         android:text="@string/lblDescripcion"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtNombreTarea" />
 
     <EditText
         android:id="@+id/txtNombreTarea"
-        android:layout_width="0dp"
+        android:layout_width="402dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginTop="1dp"
@@ -48,7 +47,7 @@
 
     <EditText
         android:id="@+id/txtDescripcionTarea"
-        android:layout_width="0dp"
+        android:layout_width="402dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginTop="1dp"
@@ -61,5 +60,87 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView13" />
+
+    <ImageButton
+        android:id="@+id/btnFecha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="10dp"
+        android:contentDescription="@string/btnFecha"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtDescripcionTarea"
+        app:srcCompat="@drawable/calendario" />
+
+    <TextView
+        android:id="@+id/txtFecha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/txtFechaTareas"
+        app:layout_constraintStart_toEndOf="@+id/btnFecha"
+        app:layout_constraintTop_toBottomOf="@+id/txtDescripcionTarea" />
+
+    <ImageButton
+        android:id="@+id/btnHora"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="11dp"
+        android:contentDescription="@string/btnHora"
+        app:layout_constraintStart_toEndOf="@+id/txtFecha"
+        app:layout_constraintTop_toBottomOf="@+id/txtDescripcionTarea"
+        app:srcCompat="@drawable/reloj_de_pared" />
+
+    <TextView
+        android:id="@+id/txtHora"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/txtHora"
+        app:layout_constraintStart_toEndOf="@+id/btnHora"
+        app:layout_constraintTop_toBottomOf="@+id/txtDescripcionTarea" />
+
+    <ImageButton
+        android:id="@+id/btnVoiceTareas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnFecha"
+        app:srcCompat="@drawable/microfono" />
+
+    <ImageButton
+        android:id="@+id/btnFotoTareas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnVoiceTareas"
+        app:srcCompat="@drawable/camara_fotografica" />
+
+    <ImageButton
+        android:id="@+id/imageButton6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnFotoTareas"
+        app:srcCompat="@drawable/camara_de_video" />
+
+    <Button
+        android:id="@+id/btnAgregarTarea"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="252dp"
+        android:text="@string/btnAgregarTarea"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageButton6" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

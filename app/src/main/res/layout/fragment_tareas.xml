@@ -5,10 +5,8 @@
     android:layout_height="match_parent"
     tools:context=".TareasFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvTareas"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Aquí van las tareas" />
-
+        android:layout_height="match_parent" />
 </FrameLayout>

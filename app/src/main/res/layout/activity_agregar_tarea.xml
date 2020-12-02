@@ -62,56 +62,14 @@
         app:layout_constraintTop_toBottomOf="@+id/textView13" />
 
     <ImageButton
-        android:id="@+id/btnFecha"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="10dp"
-        android:contentDescription="@string/btnFecha"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtDescripcionTarea"
-        app:srcCompat="@drawable/calendario" />
-
-    <TextView
-        android:id="@+id/txtFecha"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="24dp"
-        android:text="@string/txtFechaTareas"
-        app:layout_constraintStart_toEndOf="@+id/btnFecha"
-        app:layout_constraintTop_toBottomOf="@+id/txtDescripcionTarea" />
-
-    <ImageButton
-        android:id="@+id/btnHora"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="11dp"
-        android:contentDescription="@string/btnHora"
-        app:layout_constraintStart_toEndOf="@+id/txtFecha"
-        app:layout_constraintTop_toBottomOf="@+id/txtDescripcionTarea"
-        app:srcCompat="@drawable/reloj_de_pared" />
-
-    <TextView
-        android:id="@+id/txtHora"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="24dp"
-        android:text="@string/txtHora"
-        app:layout_constraintStart_toEndOf="@+id/btnHora"
-        app:layout_constraintTop_toBottomOf="@+id/txtDescripcionTarea" />
-
-    <ImageButton
         android:id="@+id/btnVoiceTareas"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:layout_marginTop="20dp"
+        android:contentDescription="@string/btnVoice"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnFecha"
-        app:srcCompat="@drawable/microfono" />
+        app:srcCompat="@drawable/microfono"
+        tools:layout_editor_absoluteY="437dp" />
 
     <ImageButton
         android:id="@+id/btnFotoTareas"
@@ -119,16 +77,18 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginTop="20dp"
+        android:contentDescription="@string/btnCamara"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnVoiceTareas"
         app:srcCompat="@drawable/camara_fotografica" />
 
     <ImageButton
-        android:id="@+id/imageButton6"
+        android:id="@+id/btnVideoTareas"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginTop="20dp"
+        android:contentDescription="@string/btnVideo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnFotoTareas"
         app:srcCompat="@drawable/camara_de_video" />
@@ -137,10 +97,56 @@
         android:id="@+id/btnAgregarTarea"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="252dp"
+        android:layout_marginTop="20dp"
         android:text="@string/btnAgregarTarea"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton6" />
+        app:layout_constraintTop_toBottomOf="@+id/btnVideoTareas" />
+
+    <EditText
+        android:id="@+id/txtFechaTareas"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="1dp"
+        android:clickable="true"
+        android:drawableStart="@drawable/calendario"
+        android:ems="10"
+        android:focusable="false"
+        android:hint="@string/txtFecha"
+        android:inputType="date"
+        android:maxLines="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <EditText
+        android:id="@+id/txtHoraTareas"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="5dp"
+        android:clickable="true"
+        android:drawableStart="@drawable/reloj_de_pared"
+        android:ems="10"
+        android:focusable="false"
+        android:hint="@string/txtHora"
+        android:importantForAutofill="no"
+        android:inputType="time"
+        android:maxLines="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/txtFechaTareas"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:text="@string/lblFechaHora"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtDescripcionTarea" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

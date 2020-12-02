@@ -17,7 +17,9 @@ public class TareasDBHelper extends SQLiteOpenHelper {
             NotasDB.TareasDatabase.COLUMN_NAME_COL2 + " text," +
             NotasDB.TareasDatabase.COLUMN_NAME_COL3 + " text," +
             NotasDB.TareasDatabase.COLUMN_NAME_COL4 + " text," +
-            NotasDB.TareasDatabase.COLUMN_NAME_COL5 + " text)";
+            NotasDB.TareasDatabase.COLUMN_NAME_COL5 + " text," +
+            NotasDB.TareasDatabase.COLUMN_NAME_COL6 + " text," +
+            NotasDB.TareasDatabase.COLUMN_NAME_COL7 + " text)";
 
     private static final String DELETE_NOTAS_TABLE = "DROP TABLE IF EXISTS " + NotasDB.TareasDatabase.TABLE_NAME;
 

@@ -12,10 +12,12 @@ public class Tareas {
     private String UriFoto;
     private String UriVideo;
     private String UriVoz;
+    private String FechaFinal;
+    private String HoraFinal;
 
     public Tareas() {}
 
-    public Tareas(int tareaId, String nombre, String descripcion, String fechaHora, List<LocalDateTime> recordatorios, String uriFoto, String uriVideo, String uriVoz) {
+    public Tareas(int tareaId, String nombre, String descripcion, String fechaHora, List<LocalDateTime> recordatorios, String uriFoto, String uriVideo, String uriVoz, String fechaFinal, String horaFinal) {
         TareaId = tareaId;
         Nombre = nombre;
         Descripcion = descripcion;
@@ -24,6 +26,8 @@ public class Tareas {
         UriFoto = uriFoto;
         UriVideo = uriVideo;
         UriVoz = uriVoz;
+        FechaFinal = fechaFinal;
+        HoraFinal = horaFinal;
     }
 
     public int getTareaId() {
@@ -88,5 +92,21 @@ public class Tareas {
 
     public void setUriVoz(String uriVoz) {
         UriVoz = uriVoz;
+    }
+
+    public String getFechaFinal() {
+        return FechaFinal;
+    }
+
+    public void setFechaFinal(String fechaFinal) {
+        FechaFinal = fechaFinal;
+    }
+
+    public String getHoraFinal() {
+        return HoraFinal;
+    }
+
+    public void setHoraFinal(String horaFinal) {
+        HoraFinal = horaFinal;
     }
 }

@@ -17,6 +17,7 @@
     <string name="btnCamara">Tomar foto</string>
     <string name="btnFecha">Boton para seleccionar fecha</string>
     <string name="btnHora">Botón para seleccionar hora</string>
-    <string name="txtFechaTareas">dd/MM/yyyy</string>
-    <string name="txtHora">HH:MM</string>
+    <string name="txtHora">Ingrese hora</string>
+    <string name="txtFecha">Ingrese fecha</string>
+    <string name="lblFechaHora">Seleccione fecha de vencimiento:</string>
 </resources>

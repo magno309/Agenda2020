@@ -6,10 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -18,23 +18,22 @@ public class AdaptadorNotas extends RecyclerView.Adapter<AdaptadorNotas.Viewhold
 
     private LayoutInflater inflador;
     private List<Notas> listaNotas;
-    private View.OnClickListener onClickListener;
     private NotasDBHelper dbHelper;
     private SQLiteDatabase db;
-    Context context;
+    private Context context;
+    private ListenerNotaI listenerNotaI;
 
-    public AdaptadorNotas(Context contexto, List<Notas> listaNotas){
-        this.inflador = (LayoutInflater)
-                contexto.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    public AdaptadorNotas(Context contexto, List<Notas> listaNotas, ListenerNotaI listenerNotaI){
+        this.inflador = (LayoutInflater) contexto.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.listaNotas = listaNotas;
         this.context = contexto;
+        this.listenerNotaI = listenerNotaI;
     }
 
     @NonNull
     @Override
     public Viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = inflador.inflate(R.layout.nota_cardview, parent, false);
-        v.setOnClickListener(this.onClickListener);
         return new Viewholder(v);
     }
 
@@ -48,7 +47,7 @@ public class AdaptadorNotas extends RecyclerView.Adapter<AdaptadorNotas.Viewhold
         holder.eliminarNota.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final Notas nota = listaNotas.get(position);
+                //final Notas nota = listaNotas.get(position);
                 final int idNota = nota.getNotaId();
                 dbHelper = new NotasDBHelper(context);
                 db = dbHelper.getWritableDatabase();
@@ -59,6 +58,12 @@ public class AdaptadorNotas extends RecyclerView.Adapter<AdaptadorNotas.Viewhold
                 db.close();
             }
         });
+        holder.layoutNota.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listenerNotaI.notaRecyclerViewClicked(nota, position);
+            }
+        });
     }
 
     @Override
@@ -67,25 +72,23 @@ public class AdaptadorNotas extends RecyclerView.Adapter<AdaptadorNotas.Viewhold
     }
 
     public static class Viewholder extends RecyclerView.ViewHolder{
-        public TextView nombre;
-        public View separador1;
-        public TextView descripcion;
-        public View separador2;
-        public TextView fechaHora;
-        public ImageView eliminarNota;
+        TextView nombre;
+        //View separador1;
+        TextView descripcion;
+        //View separador2;
+        TextView fechaHora;
+        ImageView eliminarNota;
+        LinearLayout layoutNota;
 
         public Viewholder(View itemView) {
             super(itemView);
             nombre = itemView.findViewById(R.id.txt_Nombre_Nota);
-            separador1 = itemView.findViewById(R.id.separador1);
+            //separador1 = itemView.findViewById(R.id.separador1);
             descripcion = itemView.findViewById(R.id.txt_Descripción_Nota);
-            separador2 = itemView.findViewById(R.id.separador2);
+            //separador2 = itemView.findViewById(R.id.separador2);
             fechaHora = itemView.findViewById(R.id.txt_FechaYHora_Nota);
             eliminarNota = itemView.findViewById(R.id.btn_eliminar_nota);
+            layoutNota = itemView.findViewById(R.id.layout_nota);
         }
-    }
-
-    public void setOnClickListener(View.OnClickListener onClickListener){
-        this.onClickListener = onClickListener;
     }
 }

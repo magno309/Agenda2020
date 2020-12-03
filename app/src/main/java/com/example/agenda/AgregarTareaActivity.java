@@ -1,6 +1,7 @@
 package com.example.agenda;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
@@ -19,6 +20,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.util.Calendar;
+import java.util.List;
 
 public class AgregarTareaActivity extends AppCompatActivity {
 
@@ -28,6 +30,10 @@ public class AgregarTareaActivity extends AppCompatActivity {
     ImageButton btnVoice, btnFoto, btnVideo ,btnRecordatorio;
     Button btnAgregarTarea;
     RecyclerView recyclerView;
+    LinearLayoutManager layoutManager;
+    AdaptadorRecordatorios adaptadorRecordatorios;
+    List<Recordatorios> listaRecordatorios;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +52,8 @@ public class AgregarTareaActivity extends AppCompatActivity {
         btnFecha = (EditText) findViewById(R.id.txtFechaTareas);
 
         btnAgregarTarea = (Button) findViewById(R.id.btnAgregarTarea);
+
+        recyclerView = (RecyclerView) findViewById(R.id.rvListaRecordatorios);
 
         btnFecha.setOnClickListener(view -> {
             showDatePickerDialog();
@@ -79,7 +87,9 @@ public class AgregarTareaActivity extends AppCompatActivity {
         });
 
         btnRecordatorio.setOnClickListener(view -> {
-
+            listaRecordatorios.add(new Recordatorios(btnFecha.getText().toString(), btnHora.getText().toString()));
+            btnFecha.setText("");
+            btnHora.setText("");
         });
     }
 

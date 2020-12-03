@@ -27,5 +27,11 @@ public final class NotasDB {
         public static final String COLUMN_NAME_COL7 = "HoraFinal";
     }
 
+    public static class RecordatorioDatabase implements BaseColumns{
+        public static final String TABLE_NAME = "Recordatorios";
+        public static final String COLUMN_NAME_COL1 = "ID_Tarea";
+        public static final String COLUMN_NAME_COL2 = "Fecha";
+        public static final String COLUMN_NAME_COL3 = "Hora";
+    }
 }
 

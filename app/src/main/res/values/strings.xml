@@ -19,5 +19,5 @@
     <string name="btnHora">Botón para seleccionar hora</string>
     <string name="txtHora">Ingrese hora</string>
     <string name="txtFecha">Ingrese fecha</string>
-    <string name="lblFechaHora">Seleccione fecha de vencimiento:</string>
+    <string name="lblFechaHora">Añadir recordatorio:</string>
 </resources>

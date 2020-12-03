@@ -65,11 +65,12 @@
         android:id="@+id/btnVoiceTareas"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="10dp"
         android:contentDescription="@string/btnVoice"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/microfono"
-        tools:layout_editor_absoluteY="437dp" />
+        app:layout_constraintTop_toBottomOf="@+id/rvListaRecordatorios"
+        app:srcCompat="@drawable/microfono" />
 
     <ImageButton
         android:id="@+id/btnFotoTareas"
@@ -105,10 +106,10 @@
 
     <EditText
         android:id="@+id/txtFechaTareas"
-        android:layout_width="0dp"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="1dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="5dp"
         android:clickable="true"
         android:drawableStart="@drawable/calendario"
         android:ems="10"
@@ -121,11 +122,10 @@
 
     <EditText
         android:id="@+id/txtHoraTareas"
-        android:layout_width="0dp"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="1dp"
-        android:layout_marginEnd="5dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="5dp"
         android:clickable="true"
         android:drawableStart="@drawable/reloj_de_pared"
         android:ems="10"
@@ -134,8 +134,6 @@
         android:importantForAutofill="no"
         android:inputType="time"
         android:maxLines="1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/txtFechaTareas"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
@@ -148,5 +146,29 @@
         android:text="@string/lblFechaHora"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtDescripcionTarea" />
+
+    <ImageButton
+        android:id="@+id/btnAgregarRecordatorio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.51"
+        app:layout_constraintStart_toEndOf="@+id/txtHoraTareas"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:srcCompat="@android:drawable/ic_menu_add" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvListaRecordatorios"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtHoraTareas" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

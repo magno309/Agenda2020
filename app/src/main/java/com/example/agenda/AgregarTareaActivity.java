@@ -1,6 +1,7 @@
 package com.example.agenda;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -24,8 +25,9 @@ public class AgregarTareaActivity extends AppCompatActivity {
     NotasDBHelper dbHelper;
     SQLiteDatabase db;
     EditText txtNombre, txtDescripcion, btnHora, btnFecha;
-    ImageButton btnVoice, btnFoto, btnVideo;
+    ImageButton btnVoice, btnFoto, btnVideo ,btnRecordatorio;
     Button btnAgregarTarea;
+    RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,8 @@ public class AgregarTareaActivity extends AppCompatActivity {
         btnVoice = (ImageButton) findViewById(R.id.btnVoiceTareas);
         btnFoto = (ImageButton) findViewById(R.id.btnFotoTareas);
         btnVideo = (ImageButton) findViewById(R.id.btnVideoTareas);
+        btnRecordatorio = (ImageButton) findViewById(R.id.btnAgregarRecordatorio);
+
         btnHora = (EditText) findViewById(R.id.txtHoraTareas);
         btnFecha = (EditText) findViewById(R.id.txtFechaTareas);
 
@@ -72,6 +76,10 @@ public class AgregarTareaActivity extends AppCompatActivity {
                     Toast.makeText(this, "Error al registrar la nota", Toast.LENGTH_SHORT).show();
                 }
             }
+        });
+
+        btnRecordatorio.setOnClickListener(view -> {
+
         });
     }
 

@@ -21,8 +21,7 @@ public class AdaptadorRecordatorios extends RecyclerView.Adapter<AdaptadorRecord
     private Context context;
 
     public AdaptadorRecordatorios(Context contexto, List<Recordatorios> listaRecordatorios){
-        this.inflador = (LayoutInflater)
-                context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.inflador = (LayoutInflater) contexto.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.context = contexto;
         this.listaRecordatorios = listaRecordatorios;
     }

@@ -55,9 +55,9 @@ public class AgregarTareaActivity extends AppCompatActivity {
         btnAgregarTarea = (Button) findViewById(R.id.btnAgregarTarea);
 
         recyclerView = (RecyclerView) findViewById(R.id.rvListaRecordatorios);
-        layoutManager = new LinearLayoutManager(getApplicationContext());
+        layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
-        adaptadorRecordatorios = new AdaptadorRecordatorios(getApplicationContext(), listaRecordatorios);
+        adaptadorRecordatorios = new AdaptadorRecordatorios(this, listaRecordatorios);
         recyclerView.setAdapter(adaptadorRecordatorios);
 
         btnFecha.setOnClickListener(view -> {

@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -31,7 +32,6 @@ public class AgregarTareaActivity extends AppCompatActivity {
     ImageButton btnVoice, btnFoto, btnVideo ,btnRecordatorio;
     Button btnAgregarTarea;
     RecyclerView recyclerView;
-    LinearLayoutManager layoutManager;
     AdaptadorRecordatorios adaptadorRecordatorios;
     List<Recordatorios> listaRecordatorios;
 
@@ -54,8 +54,8 @@ public class AgregarTareaActivity extends AppCompatActivity {
 
         btnAgregarTarea = (Button) findViewById(R.id.btnAgregarTarea);
 
+        listaRecordatorios = new ArrayList<>();
         recyclerView = (RecyclerView) findViewById(R.id.rvListaRecordatorios);
-        layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
         adaptadorRecordatorios = new AdaptadorRecordatorios(this, listaRecordatorios);
         recyclerView.setAdapter(adaptadorRecordatorios);
@@ -92,10 +92,12 @@ public class AgregarTareaActivity extends AppCompatActivity {
         });
 
         btnRecordatorio.setOnClickListener(view -> {
-            listaRecordatorios.add(new Recordatorios(btnFecha.getText().toString(), btnHora.getText().toString()));
-            adaptadorRecordatorios.notifyItemInserted(0);
-            btnFecha.setText("");
-            btnHora.setText("");
+            if(!btnFecha.getText().toString().equals("") || !btnHora.getText().toString().equals("")){
+                listaRecordatorios.add(new Recordatorios(btnFecha.getText().toString(), btnHora.getText().toString()));
+                adaptadorRecordatorios.notifyItemInserted(listaRecordatorios.size()-1);
+                btnFecha.setText("");
+                btnHora.setText("");
+            }
         });
     }
 

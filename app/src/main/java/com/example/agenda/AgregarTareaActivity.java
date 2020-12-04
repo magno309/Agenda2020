@@ -69,7 +69,7 @@ public class AgregarTareaActivity extends AppCompatActivity {
         });
 
         btnAgregarTarea.setOnClickListener(view -> {
-            if(true/*Aquí va el update, creo*/){
+            if(true/*Aquí va el insert, creo*/){
                 String nombre = txtNombre.getText().toString();
                 String descripcion = txtDescripcion.getText().toString();
                 String fechaVencimiento = btnFecha.getText().toString();

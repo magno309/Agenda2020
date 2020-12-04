@@ -3,6 +3,7 @@ package com.example.agenda;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -54,6 +55,10 @@ public class AgregarTareaActivity extends AppCompatActivity {
         btnAgregarTarea = (Button) findViewById(R.id.btnAgregarTarea);
 
         recyclerView = (RecyclerView) findViewById(R.id.rvListaRecordatorios);
+        layoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
+        adaptadorRecordatorios = new AdaptadorRecordatorios(getApplicationContext(), listaRecordatorios);
+        recyclerView.setAdapter(adaptadorRecordatorios);
 
         btnFecha.setOnClickListener(view -> {
             showDatePickerDialog();
@@ -88,6 +93,7 @@ public class AgregarTareaActivity extends AppCompatActivity {
 
         btnRecordatorio.setOnClickListener(view -> {
             listaRecordatorios.add(new Recordatorios(btnFecha.getText().toString(), btnHora.getText().toString()));
+            adaptadorRecordatorios.notifyItemInserted(0);
             btnFecha.setText("");
             btnHora.setText("");
         });

@@ -1,8 +1,11 @@
 package com.example.agenda;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,16 +41,31 @@ public class AdaptadorImagen extends RecyclerView.Adapter<AdaptadorImagen.Viewho
 
     @Override
     public void onBindViewHolder(@NonNull Viewholder holder, int position) {
-        holder.imageView.setImageBitmap(BitmapFactory.decodeFile(listaPaths.get(position)));
-        //holder.imageView.setImageURI(listaPaths.get(position));
-        Log.println(Log.INFO, "rutas", "Bind: "+listaPaths.get(position));
-        //holder.descripcion.setText(listaDescripciones.get(position));
-        /*holder.layoutImagen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        String ruta = listaPaths.get(position);
+        Log.println(Log.INFO, "rutas", "Bind: "+ruta);
+        if(ruta.contains("mp4")){
+            holder.imageView.setImageBitmap(ThumbnailUtils.createVideoThumbnail(ruta, MediaStore.Video.Thumbnails.MINI_KIND));
+            holder.reproducirVideo.setVisibility(View.VISIBLE);
+            holder.reproducirVideo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(context, PlayVideo.class);
+                    intent.putExtra("rutaVideo", ruta);
+                    context.startActivity(intent);
+                }
+            });
+        }
+        else{
+            holder.imageView.setImageBitmap(BitmapFactory.decodeFile(ruta));
+            //holder.imageView.setImageURI(listaPaths.get(position));
+            //holder.descripcion.setText(listaDescripciones.get(position));
+            /*holder.layoutImagen.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-            }
-        });*/
+                }
+            });*/
+        }
     }
 
     @Override
@@ -58,12 +76,14 @@ public class AdaptadorImagen extends RecyclerView.Adapter<AdaptadorImagen.Viewho
     public static class Viewholder extends RecyclerView.ViewHolder{
         LinearLayout layoutImagen;
         ImageView imageView;
+        ImageView reproducirVideo;
         //EditText descripcion;
 
         public Viewholder(View itemView) {
             super(itemView);
             layoutImagen = itemView.findViewById(R.id.layout_imagen);
             imageView = itemView.findViewById(R.id.imgViewImagen);
+            reproducirVideo = itemView.findViewById(R.id.reproducirVideo);
             //descripcion = itemView.findViewById(R.id.txtDescripcionImagen);
         }
     }

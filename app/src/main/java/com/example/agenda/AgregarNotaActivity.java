@@ -7,10 +7,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.Manifest;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,11 +23,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.Size;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -54,11 +58,12 @@ public class AgregarNotaActivity extends AppCompatActivity {
     //Componentes de la UI
     private EditText txtNombre, txtDescrpcion;
     private Button btnAgregarNota;
-    private ImageButton btnCamaraNota, btnVoice;
+    private ImageButton btnCamaraNota, btnVideoNota, btnVoice;
     //private ImageView imageView;
 
     //Multimedia
     private RecyclerView rvMultimedia;
+    private boolean esImagen=false;
 
     //Imagenes
     private ImageView imageViewTemp;
@@ -69,6 +74,9 @@ public class AgregarNotaActivity extends AppCompatActivity {
     static final int REQUEST_CODE_SELECT_IMAGE = 2;
     static final int REQUEST_CODE_WRITE_STORAGE_PERMISSION = 3;
     static final int REQUEST_CODE_IMAGE_CAPTURE = 4;
+
+    //Videos
+    static final int REQUEST_CODE_SELECT_VIDEO = 5;
 
     //MediaRecorder
     private static final String LOG_TAG = "AudioRecordTest";
@@ -92,7 +100,8 @@ public class AgregarNotaActivity extends AppCompatActivity {
                 break;
             case REQUEST_CODE_STORAGE_PERMISSION:
                 if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                    seleccionarImagen();
+                    if(esImagen) seleccionarImagen();
+                    else seleccionarVideo();
                 }
                 break;
             case REQUEST_CODE_WRITE_STORAGE_PERMISSION:
@@ -144,6 +153,13 @@ public class AgregarNotaActivity extends AppCompatActivity {
         return image;
     }
 
+    private void seleccionarVideo(){
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+        if(intent.resolveActivity(getPackageManager()) !=null){
+            startActivityForResult(intent, REQUEST_CODE_SELECT_VIDEO);
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -185,7 +201,33 @@ public class AgregarNotaActivity extends AppCompatActivity {
             //Log.println(Log.INFO, "rutas", "ruta: "+rutaFotoCapturada);
             //Uri uri = Uri.fromFile(new File(rutaFotoCapturada));
             //Log.println(Log.INFO, "rutas", "uri: "+uri.toString());
+        }
+        else if(requestCode == REQUEST_CODE_SELECT_VIDEO && resultCode == RESULT_OK){
+            if(data != null){
+                Uri videoUri = data.getData();
+                if(videoUri != null){
+                    try {
+                        //Log.println(Log.INFO, "rutas", "ruta: "+getPathFromUri(videoUri));
+                        imgsPaths.add(getPathFromUri(videoUri));
+                        adaptadorImagen.notifyItemInserted(imgsPaths.size()-1);
+                       /* FragmentManager fragmentManager = getSupportFragmentManager();
+                        PlayVideoFragment playVideoFragment = new PlayVideoFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString(playVideoFragment.ARG_RUTA_VIDEO, getPathFromUri(videoUri));
+                        playVideoFragment.setArguments(bundle);
+                        fragmentManager.beginTransaction().replace(R.id.actAgregarNota,playVideoFragment).commit();*/
 
+                        /*Intent intent = new Intent(this, PlayVideo.class);
+                        intent.putExtra("rutaVideo", getPathFromUri(videoUri));
+                        startActivity(intent);*/
+
+                        //imageViewTemp.setImageBitmap(ThumbnailUtils.createVideoThumbnail(getPathFromUri(videoUri), MediaStore.Video.Thumbnails.MINI_KIND));
+
+                    }catch (Exception ex){
+                        Log.e("error",ex.getMessage());
+                    }
+                }
+            }
         }
     }
 
@@ -291,8 +333,10 @@ public class AgregarNotaActivity extends AppCompatActivity {
         btnAgregarNota = (Button) findViewById(R.id.btnAgregarNota);
         btnCamaraNota = findViewById(R.id.btnCameraNotas);
         btnCamaraNota.setOnClickListener(btnCameraNotaOnClick());
+        btnVideoNota = findViewById(R.id.btnVideoNotas);
+        btnVideoNota.setOnClickListener(btnVideoNotaOnClick());
 
-        //imageViewTemp = findViewById(R.id.imgViewImagenTemp);
+        imageViewTemp = findViewById(R.id.imgViewTemp);
 
         rvMultimedia = findViewById(R.id.rvMultimediaNotas);
         rvMultimedia.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
@@ -406,13 +450,14 @@ public class AgregarNotaActivity extends AppCompatActivity {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String[] opciones = {"Seleccionar del sistema","Tomar una foto", "Cancelar" };
+                String[] opciones = {"Seleccionar imagen del sistema","Tomar una foto", "Cancelar" };
                 AlertDialog.Builder builder = new AlertDialog.Builder(AgregarNotaActivity.this);
                 builder.setTitle("Selecciona de dónde quieres insertar una imagen");
                 builder.setItems(opciones, new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        if(opciones[i].equals("Seleccionar del sistema")){
+                        if(opciones[i].equals("Seleccionar imagen del sistema")){
+                            esImagen=true;
                             if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
                                     != PackageManager.PERMISSION_GRANTED){
                                 ActivityCompat.requestPermissions(AgregarNotaActivity.this,
@@ -423,6 +468,50 @@ public class AgregarNotaActivity extends AppCompatActivity {
                             }
                         }
                         else if(opciones[i].equals("Tomar una foto")){
+                            esImagen=true;
+                            if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                    != PackageManager.PERMISSION_GRANTED){
+                                ActivityCompat.requestPermissions(AgregarNotaActivity.this,
+                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_WRITE_STORAGE_PERMISSION);
+                            }
+                            else{
+                                tomarCaptura();
+                            }
+                        }
+                        else{
+                            dialogInterface.dismiss();
+                        }
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        };
+    }
+
+    private View.OnClickListener btnVideoNotaOnClick(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String[] opciones = {"Seleccionar video del sistema","Grabar un video", "Cancelar" };
+                AlertDialog.Builder builder = new AlertDialog.Builder(AgregarNotaActivity.this);
+                builder.setTitle("Selecciona de dónde quieres insertar un video");
+                builder.setItems(opciones, new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(opciones[i].equals("Seleccionar video del sistema")){
+                            esImagen=false;
+                            if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                                    != PackageManager.PERMISSION_GRANTED){
+                                ActivityCompat.requestPermissions(AgregarNotaActivity.this,
+                                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_STORAGE_PERMISSION);
+                            }
+                            else{
+                                seleccionarVideo();
+                            }
+                        }
+                        else if(opciones[i].equals("Grabar un video")){
+                            esImagen=false;
                             if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                                     != PackageManager.PERMISSION_GRANTED){
                                 ActivityCompat.requestPermissions(AgregarNotaActivity.this,

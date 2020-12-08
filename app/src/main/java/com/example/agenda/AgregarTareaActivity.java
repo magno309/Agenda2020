@@ -5,11 +5,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -35,6 +41,13 @@ public class AgregarTareaActivity extends AppCompatActivity {
     AdaptadorRecordatorios adaptadorRecordatorios;
     List<Recordatorios> listaRecordatorios;
 
+    private NotificationManager mNotificationManager;
+    private static final int NOTIFICATION_ID = 0;
+    private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
+    List<Calendar> listaCalendario;
+    Calendar Fecha;
+    Calendar Hora;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +68,9 @@ public class AgregarTareaActivity extends AppCompatActivity {
         btnAgregarTarea = (Button) findViewById(R.id.btnAgregarTarea);
 
         listaRecordatorios = new ArrayList<>();
+        listaCalendario = new ArrayList<>();
+        mNotificationManager = (NotificationManager)
+                getSystemService(NOTIFICATION_SERVICE);
         recyclerView = (RecyclerView) findViewById(R.id.rvListaRecordatorios);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
         adaptadorRecordatorios = new AdaptadorRecordatorios(this, listaRecordatorios);
@@ -81,6 +97,12 @@ public class AgregarTareaActivity extends AppCompatActivity {
                 contentValues.put(NotasDB.TareasDatabase.COLUMN_NAME_COL7, horaVencimiento);
                 long rowID = db.insert(NotasDB.TareasDatabase.TABLE_NAME, null, contentValues);
                 if (rowID != -1) {
+                    for (Calendar c: listaCalendario) {
+                        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+                        Intent intent = new Intent(this, BootReceiver.class);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+                        alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+                    }
                     Toast.makeText(this, "Tarea registrada exitosamente", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(this, MainActivity.class);
                     startActivity(intent);
@@ -95,6 +117,13 @@ public class AgregarTareaActivity extends AppCompatActivity {
             if(!btnFecha.getText().toString().equals("") || !btnHora.getText().toString().equals("")){
                 listaRecordatorios.add(new Recordatorios(btnFecha.getText().toString(), btnHora.getText().toString()));
                 adaptadorRecordatorios.notifyItemInserted(listaRecordatorios.size()-1);
+                final Calendar c = Calendar.getInstance();
+                c.set(Calendar.YEAR, Fecha.get(Calendar.YEAR));
+                c.set(Calendar.MONTH, Fecha.get(Calendar.MONTH));
+                c.set(Calendar.DAY_OF_MONTH, Fecha.get(Calendar.DAY_OF_MONTH));
+                c.set(Calendar.HOUR_OF_DAY, Hora.get(Calendar.HOUR_OF_DAY));
+                c.set(Calendar.YEAR, Hora.get(Calendar.MINUTE));
+                listaCalendario.add(c);
                 btnFecha.setText("");
                 btnHora.setText("");
             }
@@ -121,12 +150,12 @@ public class AgregarTareaActivity extends AppCompatActivity {
                 }
                 //Muestro la hora con el formato deseado
                 btnHora.setText(" " + horaFormateada + ":" + minutoFormateado + " " + AM_PM);
+                Hora = c;
             }
             //Estos valores deben ir en ese orden
             //Al colocar en false se muestra en formato 12 horas y true en formato 24 horas
             //Pero el sistema devuelve la hora en formato 24 horas
         }, hora, minuto, false);
-
         recogerHora.show();
     }
 
@@ -146,10 +175,44 @@ public class AgregarTareaActivity extends AppCompatActivity {
                 String mesFormateado = (mesActual < 10)? "0" + String.valueOf(mesActual):String.valueOf(mesActual);
                 //Muestro la fecha con el formato deseado
                 btnFecha.setText(" " + diaFormateado + "/" + mesFormateado + "/" + year);
+                Fecha = c;
             }
         },anio, mes, dia);
         //Muestro el widget
         recogerFecha.show();
+    }
+
+    /**
+     * Creates a Notification channel, for OREO and higher.
+     */
+    public void createNotificationChannel() {
+
+        // Create a notification manager object.
+        mNotificationManager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        // Notification channels are only available in OREO and higher.
+        // So, add a check on SDK version.
+        if (android.os.Build.VERSION.SDK_INT >=
+                android.os.Build.VERSION_CODES.O) {
+
+            // Create the NotificationChannel with all the parameters.
+            NotificationChannel notificationChannel = new NotificationChannel
+                    (PRIMARY_CHANNEL_ID,
+                            "Notificación de agenda",
+                            NotificationManager.IMPORTANCE_HIGH);
+
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.enableVibration(true);
+            notificationChannel.setDescription
+                    ("Notifica eventes de la sección de tareas");
+            mNotificationManager.createNotificationChannel(notificationChannel);
+        }
+    }
+
+    private void deliverNotification(Context context) {
+
     }
 
 }

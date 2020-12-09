@@ -34,6 +34,7 @@ public class BotonNotificacion extends BroadcastReceiver {
                         TareasFragment.listaTareas.clear();
                         while(cursor.moveToNext()){
                             Tareas tarea = new Tareas();
+                            //Algo
                             tarea.setTareaId(cursor.getInt(cursor.getColumnIndex(NotasDB.TareasDatabase._ID)));
                             tarea.setNombre(cursor.getString(cursor.getColumnIndex(NotasDB.TareasDatabase.COLUMN_NAME_COL1)));
                             tarea.setDescripcion(cursor.getString(cursor.getColumnIndex(NotasDB.TareasDatabase.COLUMN_NAME_COL2)));

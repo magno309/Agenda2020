@@ -21,6 +21,7 @@ import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Icon;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.media.ThumbnailUtils;
@@ -59,7 +60,6 @@ public class AgregarNotaActivity extends AppCompatActivity {
     private EditText txtNombre, txtDescrpcion;
     private Button btnAgregarNota;
     private ImageButton btnCamaraNota, btnVideoNota, btnVoice;
-    //private ImageView imageView;
 
     //Multimedia
     private RecyclerView rvMultimedia;
@@ -78,26 +78,20 @@ public class AgregarNotaActivity extends AppCompatActivity {
     //Videos
     static final int REQUEST_CODE_SELECT_VIDEO = 5;
 
-    //MediaRecorder
-    private static final String LOG_TAG = "AudioRecordTest";
-    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
-    private static String fileName = null;
-
+    //Audio
+    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 6;
+    private List<String> audiosCapturadosPaths;
+    private static String rutaAudioCapturado;
+    private boolean grabando=false;
     private MediaRecorder recorder = null;
-    private MediaPlayer player = null;
 
-
-    // Requesting permission to RECORD_AUDIO
-    private boolean permissionToRecordAccepted = false;
-    private String [] permissions = {Manifest.permission.RECORD_AUDIO};
+    //private boolean permissionToRecordAccepted = false;
+    //private String [] permissions = {Manifest.permission.RECORD_AUDIO};
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode){
-            case REQUEST_RECORD_AUDIO_PERMISSION:
-                permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                break;
             case REQUEST_CODE_STORAGE_PERMISSION:
                 if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
                     if(esImagen) seleccionarImagen();
@@ -109,8 +103,17 @@ public class AgregarNotaActivity extends AppCompatActivity {
                     tomarCaptura();
                 }
                 break;
+            case REQUEST_RECORD_AUDIO_PERMISSION:
+                if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                    if(grabando==false){
+                        tomarAudio();
+                        btnVoice.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_stop));
+                        grabando=true;
+                    }
+                }
+                break;
         }
-        if (!permissionToRecordAccepted ) finish();
+        //if (!permissionToRecordAccepted ) finish();
     }
 
     private void seleccionarImagen(){
@@ -139,6 +142,28 @@ public class AgregarNotaActivity extends AppCompatActivity {
         }
     }
 
+    private void tomarAudio(){
+        File audioFile = null;
+        try{
+            audioFile = crearArchivoDeAudio();
+        }catch (IOException ex){
+            Toast.makeText(AgregarNotaActivity.this, "Error al crear el archivo de audio: "+ex.getMessage(), Toast.LENGTH_LONG).show();
+        }
+        if(audioFile != null){
+            recorder = new MediaRecorder();
+            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            recorder.setOutputFile(rutaAudioCapturado);
+            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            try {
+                recorder.prepare();
+            } catch (IOException e) {
+                Log.e("audio", "prepare() failed");
+            }
+            recorder.start();
+        }
+    }
+
     private File crearArchivoDeImagen() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
@@ -151,6 +176,20 @@ public class AgregarNotaActivity extends AppCompatActivity {
         rutaFotoCapturada = image.getAbsolutePath();
         imgsCapturadasPaths.add(rutaFotoCapturada);
         return image;
+    }
+
+    private File crearArchivoDeAudio() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "AUDIO_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
+        File audio = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".3gp",         /* suffix */
+                storageDir      /* directory */
+        );
+        rutaAudioCapturado = audio.getAbsolutePath();
+        audiosCapturadosPaths.add(rutaAudioCapturado);
+        return audio;
     }
 
     private void seleccionarVideo(){
@@ -195,7 +234,6 @@ public class AgregarNotaActivity extends AppCompatActivity {
         else if(requestCode == REQUEST_CODE_IMAGE_CAPTURE && resultCode == RESULT_OK){
             if(rutaFotoCapturada != null && !rutaFotoCapturada.isEmpty()){
                 imgsPaths.add(rutaFotoCapturada);
-
                 adaptadorImagen.notifyItemInserted(imgsPaths.size()-1);
             }
             //Log.println(Log.INFO, "rutas", "ruta: "+rutaFotoCapturada);
@@ -246,75 +284,12 @@ public class AgregarNotaActivity extends AppCompatActivity {
         return filePath;
     }
 
-    private void onRecord(boolean start) {
-        if (start) {
-            startRecording();
-        } else {
-            stopRecording();
-        }
-    }
-
-    private void onPlay(boolean start) {
-        if (start) {
-            startPlaying();
-        } else {
-            stopPlaying();
-        }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (recorder != null) {
-            recorder.release();
-            recorder = null;
-        }
-
-        if (player != null) {
-            player.release();
-            player = null;
-        }
-    }
-
-    private void startPlaying() {
-        player = new MediaPlayer();
-        try {
-            player.setDataSource(fileName);
-            player.prepare();
-            player.start();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
-        }
-    }
-
-    private void stopPlaying() {
-        player.release();
-        player = null;
-    }
-
-    private void startRecording() {
-        recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        recorder.setOutputFile(fileName);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-
-        try {
-            recorder.prepare();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
-        }
-
-        recorder.start();
-    }
-
-    private int audiosGrabados = 0;
-
-    private void stopRecording() {
+    private void pararGrabacion() {
         recorder.stop();
         recorder.release();
         recorder = null;
-        audiosGrabados++;
+        imgsPaths.add(rutaAudioCapturado);
+        adaptadorImagen.notifyItemInserted(imgsPaths.size()-1);
     }
 
     @Override
@@ -325,6 +300,7 @@ public class AgregarNotaActivity extends AppCompatActivity {
         pathImagenes="";
         imgsPaths=new ArrayList<>();
         imgsCapturadasPaths=new ArrayList<>();
+        audiosCapturadosPaths=new ArrayList<>();
         //imgsDescripciones=new ArrayList<>();
         dbHelper = new NotasDBHelper(this);
         db = dbHelper.getWritableDatabase();
@@ -335,9 +311,9 @@ public class AgregarNotaActivity extends AppCompatActivity {
         btnCamaraNota.setOnClickListener(btnCameraNotaOnClick());
         btnVideoNota = findViewById(R.id.btnVideoNotas);
         btnVideoNota.setOnClickListener(btnVideoNotaOnClick());
-
-        imageViewTemp = findViewById(R.id.imgViewTemp);
-
+        btnVoice = findViewById(R.id.btnVoiceNotas);
+        btnVoice.setOnClickListener(btnAudioNotaOnClick());
+        //imageViewTemp = findViewById(R.id.imgViewTemp);
         rvMultimedia = findViewById(R.id.rvMultimediaNotas);
         rvMultimedia.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
 
@@ -532,11 +508,41 @@ public class AgregarNotaActivity extends AppCompatActivity {
         };
     }
 
+    private View.OnClickListener btnAudioNotaOnClick(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int icon;
+                if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO)
+                        != PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(AgregarNotaActivity.this,
+                            new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO_PERMISSION);
+                }
+                else{
+                    if(grabando==false){
+                        icon=R.drawable.ic_stop;
+                        tomarAudio();
+                        grabando=true;
+                    }
+                    else{
+                        icon=R.drawable.mic_2_64x64;
+                        pararGrabacion();
+                        grabando=false;
+                    }
+                    btnVoice.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(),icon));
+                }
+            }
+        };
+    }
+
     @Override
     protected void onDestroy() {
         db.close();
         if(!notaGuardada){
             for (String s:imgsCapturadasPaths) {
+                new File(s).delete();
+            }
+            for (String s:audiosCapturadosPaths){
                 new File(s).delete();
             }
         }

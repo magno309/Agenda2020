@@ -71,27 +71,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView13" />
 
-            <TextView
-                android:id="@+id/textView14"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:text="@string/lblMultimedia"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.056"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txtDescripcionNota" />
-
             <ImageButton
                 android:id="@+id/btnCameraNotas"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="4dp"
                 android:contentDescription="@string/btnCamara"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnVoiceNotas"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/textView14"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txtDescripcionNota"
                 app:srcCompat="@drawable/camera_64x64" />
 
@@ -102,7 +90,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
                 android:contentDescription="@string/btnVoice"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnVideoNotas"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/btnCameraNotas"
                 app:layout_constraintTop_toBottomOf="@+id/txtDescripcionNota"
@@ -115,6 +103,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
                 android:contentDescription="@string/btnVideo"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/btnVoiceNotas"
                 app:layout_constraintTop_toBottomOf="@+id/txtDescripcionNota"
                 app:srcCompat="@drawable/video_64x64" />

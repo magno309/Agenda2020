@@ -2,13 +2,17 @@ package com.example.agenda;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -44,6 +48,8 @@ public class AdaptadorTareas extends RecyclerView.Adapter<AdaptadorTareas.Viewho
         holder.descripcion.setText(tarea.getDescripcion());
         holder.fechaHora.setText(tarea.getFechaHora());
         holder.eliminarTarea.setImageResource(R.drawable.ic_delete);
+        //Eso va dentro de un if si la tarea esta completada
+        //holder.layout_tarea.setBackground(ContextCompat.getDrawable(context, R.drawable.fondo_tarea_completada));
         holder.eliminarTarea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,9 +78,11 @@ public class AdaptadorTareas extends RecyclerView.Adapter<AdaptadorTareas.Viewho
         public View separador2;
         public TextView fechaHora;
         public ImageView eliminarTarea;
+        public LinearLayout layout_tarea;
 
         public Viewholder(View itemView) {
             super(itemView);
+            layout_tarea = itemView.findViewById(R.id.layout_tarea);
             nombre = itemView.findViewById(R.id.txtNombreTareaCV);
             separador1 = itemView.findViewById(R.id.separador1T);
             descripcion = itemView.findViewById(R.id.txt_Descripcion_Tarea);

@@ -2,26 +2,35 @@ package com.example.agenda;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.Manifest;
+import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Icon;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.Size;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,70 +38,197 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class AgregarNotaActivity extends AppCompatActivity {
 
+    private boolean notaGuardada = false;
+
     //Base de datos
     NotasDBHelper dbHelper;
-    String nombre, descripcion, fechaHora;
+    String nombre, descripcion;
     SQLiteDatabase db;
 
     //Componentes de la UI
     private EditText txtNombre, txtDescrpcion;
     private Button btnAgregarNota;
-    private ImageButton btnCamaraNota, btnVoice;
-    //private ImageView imageView;
+    private ImageButton btnCamaraNota, btnVideoNota, btnVoice;
 
     //Multimedia
     private RecyclerView rvMultimedia;
+    private boolean esImagen=false;
 
     //Imagenes
     private ImageView imageViewTemp;
-    private List<String> imgsPaths; //imgsDescripciones;
-    private String pathImagenes; // descImagenes, pathImgSeleccionada;
+    private List<String> imgsPaths, imgsCapturadasPaths; //imgsDescripciones;
+    private String pathImagenes, rutaFotoCapturada; // descImagenes, pathImgSeleccionada;
     private AdaptadorImagen adaptadorImagen;
     static final int REQUEST_CODE_STORAGE_PERMISSION = 1;
     static final int REQUEST_CODE_SELECT_IMAGE = 2;
-    static final int REQUEST_IMAGE_CAPTURE = 3;
+    static final int REQUEST_CODE_WRITE_STORAGE_PERMISSION = 3;
+    static final int REQUEST_CODE_IMAGE_CAPTURE = 4;
 
-    //MediaRecorder
-    private static final String LOG_TAG = "AudioRecordTest";
-    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
-    private static String fileName = null;
+    //Videos
+    private String rutaVideoCapturado;
+    private List<String> videosCapturadosPaths;
+    static final int REQUEST_CODE_SELECT_VIDEO = 5;
+    static final int REQUEST_CODE_VIDEO_CAPTURE = 6;
 
+    //Audio
+    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 7;
+    private List<String> audiosCapturadosPaths;
+    private static String rutaAudioCapturado;
+    private boolean grabando=false;
     private MediaRecorder recorder = null;
-    private MediaPlayer player = null;
-
-
-    // Requesting permission to RECORD_AUDIO
-    private boolean permissionToRecordAccepted = false;
-    private String [] permissions = {Manifest.permission.RECORD_AUDIO};
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode){
-            case REQUEST_RECORD_AUDIO_PERMISSION:
-                permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                break;
             case REQUEST_CODE_STORAGE_PERMISSION:
                 if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                    seleccionarImagen();
+                    if(esImagen) seleccionarImagen();
+                    else seleccionarVideo();
+                }
+                break;
+            case REQUEST_CODE_WRITE_STORAGE_PERMISSION:
+                if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                    if(esImagen) tomarCaptura();
+                    else tomarVideo();
+                }
+                break;
+            case REQUEST_RECORD_AUDIO_PERMISSION:
+                if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                    if(grabando==false){
+                        tomarAudio();
+                        btnVoice.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_stop));
+                        grabando=true;
+                    }
                 }
                 break;
         }
-        if (!permissionToRecordAccepted ) finish();
     }
 
     private void seleccionarImagen(){
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         if(intent.resolveActivity(getPackageManager()) !=null){
             startActivityForResult(intent, REQUEST_CODE_SELECT_IMAGE);
+        }
+    }
+
+    private void tomarCaptura(){
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = crearArchivoDeImagen();
+            } catch (IOException ex) {
+                Toast.makeText(AgregarNotaActivity.this, "Error al crear el archivo de img: "+ex.getMessage(), Toast.LENGTH_LONG).show();
+            }
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(getApplicationContext(),
+                        "com.example.agenda",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_CODE_IMAGE_CAPTURE);
+            }
+        }
+    }
+
+    private void tomarAudio(){
+        File audioFile = null;
+        try{
+            audioFile = crearArchivoDeAudio();
+        }catch (IOException ex){
+            Toast.makeText(AgregarNotaActivity.this, "Error al crear el archivo de audio: "+ex.getMessage(), Toast.LENGTH_LONG).show();
+        }
+        if(audioFile != null){
+            recorder = new MediaRecorder();
+            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            recorder.setOutputFile(rutaAudioCapturado);
+            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            try {
+                recorder.prepare();
+            } catch (IOException e) {
+                Log.e("audio", "prepare() failed");
+            }
+            recorder.start();
+        }
+    }
+
+    private File crearArchivoDeImagen() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+        rutaFotoCapturada = image.getAbsolutePath();
+        imgsCapturadasPaths.add(rutaFotoCapturada);
+        return image;
+    }
+
+    private File crearArchivoDeVideo() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "VID_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+        File video = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".mp4",         /* suffix */
+                storageDir      /* directory */
+        );
+        rutaVideoCapturado = video.getAbsolutePath();
+        videosCapturadosPaths.add(rutaVideoCapturado);
+        return video;
+    }
+
+    private File crearArchivoDeAudio() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "AUDIO_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
+        File audio = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".3gp",         /* suffix */
+                storageDir      /* directory */
+        );
+        rutaAudioCapturado = audio.getAbsolutePath();
+        audiosCapturadosPaths.add(rutaAudioCapturado);
+        return audio;
+    }
+
+    private void seleccionarVideo(){
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+        if(intent.resolveActivity(getPackageManager()) !=null){
+            startActivityForResult(intent, REQUEST_CODE_SELECT_VIDEO);
+        }
+    }
+
+    private void tomarVideo(){
+        Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
+            File videoFile = null;
+            try {
+                videoFile = crearArchivoDeVideo();
+            } catch (IOException ex) {
+                Toast.makeText(AgregarNotaActivity.this, "Error al crear el archivo de video: "+ex.getMessage(), Toast.LENGTH_LONG).show();
+            }
+            if (videoFile != null) {
+                Uri videoURI = FileProvider.getUriForFile(getApplicationContext(),
+                        "com.example.agenda",
+                        videoFile);
+                takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoURI);
+                startActivityForResult(takeVideoIntent, REQUEST_CODE_VIDEO_CAPTURE);
+            }
         }
     }
 
@@ -128,6 +264,51 @@ public class AgregarNotaActivity extends AppCompatActivity {
                 }
             }
         }
+        else if(requestCode == REQUEST_CODE_IMAGE_CAPTURE && resultCode == RESULT_OK){
+            if(rutaFotoCapturada != null && !rutaFotoCapturada.isEmpty()){
+                imgsPaths.add(rutaFotoCapturada);
+                adaptadorImagen.notifyItemInserted(imgsPaths.size()-1);
+            }
+            //Log.println(Log.INFO, "rutas", "ruta: "+rutaFotoCapturada);
+            //Uri uri = Uri.fromFile(new File(rutaFotoCapturada));
+            //Log.println(Log.INFO, "rutas", "uri: "+uri.toString());
+        }
+        else if(requestCode == REQUEST_CODE_SELECT_VIDEO && resultCode == RESULT_OK){
+            if(data != null){
+                Uri videoUri = data.getData();
+                if(videoUri != null){
+                    try {
+                        //Log.println(Log.INFO, "rutas", "ruta: "+getPathFromUri(videoUri));
+                        imgsPaths.add(getPathFromUri(videoUri));
+                        adaptadorImagen.notifyItemInserted(imgsPaths.size()-1);
+                       /* FragmentManager fragmentManager = getSupportFragmentManager();
+                        PlayVideoFragment playVideoFragment = new PlayVideoFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString(playVideoFragment.ARG_RUTA_VIDEO, getPathFromUri(videoUri));
+                        playVideoFragment.setArguments(bundle);
+                        fragmentManager.beginTransaction().replace(R.id.actAgregarNota,playVideoFragment).commit();*/
+
+                        /*Intent intent = new Intent(this, PlayVideo.class);
+                        intent.putExtra("rutaVideo", getPathFromUri(videoUri));
+                        startActivity(intent);*/
+
+                        //imageViewTemp.setImageBitmap(ThumbnailUtils.createVideoThumbnail(getPathFromUri(videoUri), MediaStore.Video.Thumbnails.MINI_KIND));
+
+                    }catch (Exception ex){
+                        Log.e("error",ex.getMessage());
+                    }
+                }
+            }
+        }
+        else if(requestCode == REQUEST_CODE_VIDEO_CAPTURE && resultCode == RESULT_OK){
+            if(rutaVideoCapturado != null && !rutaVideoCapturado.isEmpty()){
+                imgsPaths.add(rutaVideoCapturado);
+                adaptadorImagen.notifyItemInserted(imgsPaths.size()-1);
+            }
+            //Log.println(Log.INFO, "rutas", "ruta: "+rutaFotoCapturada);
+            //Uri uri = Uri.fromFile(new File(rutaFotoCapturada));
+            //Log.println(Log.INFO, "rutas", "uri: "+uri.toString());
+        }
     }
 
     private String getPathFromUri(Uri uri){
@@ -145,75 +326,12 @@ public class AgregarNotaActivity extends AppCompatActivity {
         return filePath;
     }
 
-    private void onRecord(boolean start) {
-        if (start) {
-            startRecording();
-        } else {
-            stopRecording();
-        }
-    }
-
-    private void onPlay(boolean start) {
-        if (start) {
-            startPlaying();
-        } else {
-            stopPlaying();
-        }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (recorder != null) {
-            recorder.release();
-            recorder = null;
-        }
-
-        if (player != null) {
-            player.release();
-            player = null;
-        }
-    }
-
-    private void startPlaying() {
-        player = new MediaPlayer();
-        try {
-            player.setDataSource(fileName);
-            player.prepare();
-            player.start();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
-        }
-    }
-
-    private void stopPlaying() {
-        player.release();
-        player = null;
-    }
-
-    private void startRecording() {
-        recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        recorder.setOutputFile(fileName);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-
-        try {
-            recorder.prepare();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
-        }
-
-        recorder.start();
-    }
-
-    private int audiosGrabados = 0;
-
-    private void stopRecording() {
+    private void pararGrabacion() {
         recorder.stop();
         recorder.release();
         recorder = null;
-        audiosGrabados++;
+        imgsPaths.add(rutaAudioCapturado);
+        adaptadorImagen.notifyItemInserted(imgsPaths.size()-1);
     }
 
     @Override
@@ -223,6 +341,9 @@ public class AgregarNotaActivity extends AppCompatActivity {
         //pathImgSeleccionada="";
         pathImagenes="";
         imgsPaths=new ArrayList<>();
+        imgsCapturadasPaths=new ArrayList<>();
+        audiosCapturadosPaths=new ArrayList<>();
+        videosCapturadosPaths=new ArrayList<>();
         //imgsDescripciones=new ArrayList<>();
         dbHelper = new NotasDBHelper(this);
         db = dbHelper.getWritableDatabase();
@@ -231,9 +352,11 @@ public class AgregarNotaActivity extends AppCompatActivity {
         btnAgregarNota = (Button) findViewById(R.id.btnAgregarNota);
         btnCamaraNota = findViewById(R.id.btnCameraNotas);
         btnCamaraNota.setOnClickListener(btnCameraNotaOnClick());
-
-        //imageViewTemp = findViewById(R.id.imgViewImagenTemp);
-
+        btnVideoNota = findViewById(R.id.btnVideoNotas);
+        btnVideoNota.setOnClickListener(btnVideoNotaOnClick());
+        btnVoice = findViewById(R.id.btnVoiceNotas);
+        btnVoice.setOnClickListener(btnAudioNotaOnClick());
+        //imageViewTemp = findViewById(R.id.imgViewTemp);
         rvMultimedia = findViewById(R.id.rvMultimediaNotas);
         rvMultimedia.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
 
@@ -244,6 +367,7 @@ public class AgregarNotaActivity extends AppCompatActivity {
             adaptadorImagen = new AdaptadorImagen(this,imgsPaths,null);
             rvMultimedia.setAdapter(adaptadorImagen);
             btnAgregarNota.setOnClickListener(view -> {
+                notaGuardada = true;
                 nombre = txtNombre.getText().toString();
                 descripcion = txtDescrpcion.getText().toString();
                 if(!imgsPaths.isEmpty()){
@@ -283,7 +407,7 @@ public class AgregarNotaActivity extends AppCompatActivity {
                     pathImagenes = c1.getString(c1.getColumnIndex(NotasDB.NotasDatabase.COLUMN_NAME_COL3));
                     //pathImgSeleccionada = c1.getString(c1.getColumnIndex(NotasDB.NotasDatabase.COLUMN_NAME_COL3));
                     //descImagenes = c1.getString(c1.getColumnIndex(NotasDB.NotasDatabase.COLUMN_NAME_COL7));
-                    if(pathImagenes!=null){
+                    if(pathImagenes!=null&&!pathImagenes.isEmpty()){
                        String[] arr = pathImagenes.split(",");
                         for(int i=0; i<arr.length; i++){
                             imgsPaths.add(arr[i]);
@@ -306,6 +430,7 @@ public class AgregarNotaActivity extends AppCompatActivity {
                 btnAgregarNota.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        notaGuardada = true;
                         nombre = txtNombre.getText().toString();
                         descripcion = txtDescrpcion.getText().toString();
                         if(!imgsPaths.isEmpty()){
@@ -344,14 +469,110 @@ public class AgregarNotaActivity extends AppCompatActivity {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED){
+                String[] opciones = {"Seleccionar imagen del sistema","Tomar una foto", "Cancelar" };
+                AlertDialog.Builder builder = new AlertDialog.Builder(AgregarNotaActivity.this);
+                builder.setTitle("Selecciona de dónde quieres insertar una imagen");
+                builder.setItems(opciones, new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(opciones[i].equals("Seleccionar imagen del sistema")){
+                            esImagen=true;
+                            if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                                    != PackageManager.PERMISSION_GRANTED){
+                                ActivityCompat.requestPermissions(AgregarNotaActivity.this,
+                                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_STORAGE_PERMISSION);
+                            }
+                            else{
+                                seleccionarImagen();
+                            }
+                        }
+                        else if(opciones[i].equals("Tomar una foto")){
+                            esImagen=true;
+                            if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                    != PackageManager.PERMISSION_GRANTED){
+                                ActivityCompat.requestPermissions(AgregarNotaActivity.this,
+                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_WRITE_STORAGE_PERMISSION);
+                            }
+                            else{
+                                tomarCaptura();
+                            }
+                        }
+                        else{
+                            dialogInterface.dismiss();
+                        }
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        };
+    }
+
+    private View.OnClickListener btnVideoNotaOnClick(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String[] opciones = {"Seleccionar video del sistema","Grabar un video", "Cancelar" };
+                AlertDialog.Builder builder = new AlertDialog.Builder(AgregarNotaActivity.this);
+                builder.setTitle("Selecciona de dónde quieres insertar un video");
+                builder.setItems(opciones, new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(opciones[i].equals("Seleccionar video del sistema")){
+                            esImagen=false;
+                            if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                                    != PackageManager.PERMISSION_GRANTED){
+                                ActivityCompat.requestPermissions(AgregarNotaActivity.this,
+                                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_STORAGE_PERMISSION);
+                            }
+                            else{
+                                seleccionarVideo();
+                            }
+                        }
+                        else if(opciones[i].equals("Grabar un video")){
+                            esImagen=false;
+                            if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                    != PackageManager.PERMISSION_GRANTED){
+                                ActivityCompat.requestPermissions(AgregarNotaActivity.this,
+                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_WRITE_STORAGE_PERMISSION);
+                            }
+                            else{
+                                tomarVideo();
+                            }
+                        }
+                        else{
+                            dialogInterface.dismiss();
+                        }
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        };
+    }
+
+    private View.OnClickListener btnAudioNotaOnClick(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int icon;
+                if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO)
+                        != PackageManager.PERMISSION_GRANTED){
                     ActivityCompat.requestPermissions(AgregarNotaActivity.this,
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_STORAGE_PERMISSION);
+                            new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO_PERMISSION);
                 }
                 else{
-                    seleccionarImagen();
-
+                    if(grabando==false){
+                        icon=R.drawable.ic_stop;
+                        tomarAudio();
+                        grabando=true;
+                    }
+                    else{
+                        icon=R.drawable.mic_2_64x64;
+                        pararGrabacion();
+                        grabando=false;
+                    }
+                    btnVoice.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(),icon));
                 }
             }
         };
@@ -360,6 +581,17 @@ public class AgregarNotaActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         db.close();
+        if(!notaGuardada){
+            for (String s:imgsCapturadasPaths) {
+                new File(s).delete();
+            }
+            for (String s:audiosCapturadosPaths){
+                new File(s).delete();
+            }
+            for (String s:videosCapturadosPaths){
+                new File(s).delete();
+            }
+        }
         super.onDestroy();
     }
 }

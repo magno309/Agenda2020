@@ -24,5 +24,39 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
+        <TextView
+            android:id="@+id/play_audio"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/fondo_audio"
+            android:drawableLeft="@drawable/ic_play_big"
+            android:drawablePadding="3dp"
+            android:drawableTint="@color/white"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:text="08-08-8888 88:88"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/reproducirVideo"
+            android:visibility="gone"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/fondo_eliminar"
+            android:padding="2dp"
+            android:src="@drawable/ic_play"
+            android:tint="@color/white"
+            app:layout_constraintEnd_toEndOf="@+id/imgViewImagen"
+            app:layout_constraintTop_toTopOf="@+id/imgViewImagen" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

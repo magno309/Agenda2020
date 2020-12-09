@@ -7,27 +7,21 @@ public class Tareas {
     private int TareaId;
     private String Nombre;
     private String Descripcion;
-    private String FechaHora;
-    private List<LocalDateTime> recordatorios;
     private String UriFoto;
     private String UriVideo;
     private String UriVoz;
-    private String FechaFinal;
-    private String HoraFinal;
+    private boolean Activo;
 
     public Tareas() {}
 
-    public Tareas(int tareaId, String nombre, String descripcion, String fechaHora, List<LocalDateTime> recordatorios, String uriFoto, String uriVideo, String uriVoz, String fechaFinal, String horaFinal) {
+    public Tareas(int tareaId, String nombre, String descripcion, String uriFoto, String uriVideo, String uriVoz, boolean Activo) {
         TareaId = tareaId;
         Nombre = nombre;
         Descripcion = descripcion;
-        FechaHora = fechaHora;
-        this.recordatorios = recordatorios;
         UriFoto = uriFoto;
         UriVideo = uriVideo;
         UriVoz = uriVoz;
-        FechaFinal = fechaFinal;
-        HoraFinal = horaFinal;
+        Activo = Activo;
     }
 
     public int getTareaId() {
@@ -54,22 +48,6 @@ public class Tareas {
         Descripcion = descripcion;
     }
 
-    public String getFechaHora() {
-        return FechaHora;
-    }
-
-    public void setFechaHora(String fechaHora) {
-        FechaHora = fechaHora;
-    }
-
-    public List<LocalDateTime> getRecordatorios() {
-        return recordatorios;
-    }
-
-    public void setRecordatorios(List<LocalDateTime> recordatorios) {
-        this.recordatorios = recordatorios;
-    }
-
     public String getUriFoto() {
         return UriFoto;
     }
@@ -94,19 +72,11 @@ public class Tareas {
         UriVoz = uriVoz;
     }
 
-    public String getFechaFinal() {
-        return FechaFinal;
+    public boolean EsActivo() {
+        return Activo;
     }
 
-    public void setFechaFinal(String fechaFinal) {
-        FechaFinal = fechaFinal;
-    }
-
-    public String getHoraFinal() {
-        return HoraFinal;
-    }
-
-    public void setHoraFinal(String horaFinal) {
-        HoraFinal = horaFinal;
+    public void setActivo(boolean activo) {
+        Activo = activo;
     }
 }

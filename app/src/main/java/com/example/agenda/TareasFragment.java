@@ -63,11 +63,16 @@ public class TareasFragment extends Fragment {
             while(cursor.moveToNext()){
                 Tareas tarea = new Tareas();
                 tarea.setTareaId(cursor.getInt(cursor.getColumnIndex(NotasDB.TareasDatabase._ID)));
-                tarea.setNombre(cursor.getString(cursor.getColumnIndex(NotasDB.NotasDatabase.COLUMN_NAME_COL1)));
-                tarea.setDescripcion(cursor.getString(cursor.getColumnIndex(NotasDB.NotasDatabase.COLUMN_NAME_COL2)));
-                tarea.setUriFoto(cursor.getString(cursor.getColumnIndex(NotasDB.NotasDatabase.COLUMN_NAME_COL3)));
+                tarea.setNombre(cursor.getString(cursor.getColumnIndex(NotasDB.TareasDatabase.COLUMN_NAME_COL1)));
+                tarea.setDescripcion(cursor.getString(cursor.getColumnIndex(NotasDB.TareasDatabase.COLUMN_NAME_COL2)));
+                if(cursor.getString(cursor.getColumnIndex(NotasDB.TareasDatabase.COLUMN_NAME_COL6)).equals("true")){
+                    tarea.setActivo(true);
+                }else{
+                    tarea.setActivo(false);
+                }
+                /*tarea.setUriFoto(cursor.getString(cursor.getColumnIndex(NotasDB.NotasDatabase.COLUMN_NAME_COL3)));
                 tarea.setUriVideo(cursor.getString(cursor.getColumnIndex(NotasDB.NotasDatabase.COLUMN_NAME_COL4)));
-                tarea.setUriVoz(cursor.getString(cursor.getColumnIndex(NotasDB.NotasDatabase.COLUMN_NAME_COL5)));
+                tarea.setUriVoz(cursor.getString(cursor.getColumnIndex(NotasDB.NotasDatabase.COLUMN_NAME_COL5)));*/
                 listaTareas.add(tarea);
             }
             cursor.close();

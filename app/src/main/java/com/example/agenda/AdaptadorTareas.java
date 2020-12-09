@@ -46,10 +46,13 @@ public class AdaptadorTareas extends RecyclerView.Adapter<AdaptadorTareas.Viewho
         Tareas tarea = listaTareas.get(position);
         holder.nombre.setText(tarea.getNombre());
         holder.descripcion.setText(tarea.getDescripcion());
-        holder.fechaHora.setText(tarea.getFechaHora());
         holder.eliminarTarea.setImageResource(R.drawable.ic_delete);
         //Eso va dentro de un if si la tarea esta completada
-        //holder.layout_tarea.setBackground(ContextCompat.getDrawable(context, R.drawable.fondo_tarea_completada));
+        if(tarea.EsActivo()){
+            holder.layout_tarea.setBackground(ContextCompat.getDrawable(context, R.drawable.fondo_nota));
+        }else{
+            holder.layout_tarea.setBackground(ContextCompat.getDrawable(context, R.drawable.fondo_tarea_completada));
+        }
         holder.eliminarTarea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

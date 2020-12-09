@@ -85,54 +85,48 @@ public class AgregarTareaActivity extends AppCompatActivity {
         btnHora.setOnClickListener(view -> showTimePickerDialog());
 
         btnAgregarTarea.setOnClickListener(view -> {
-            if(true/*Aquí va el insert, creo*/){
-                String nombre = txtNombre.getText().toString();
-                String descripcion = txtDescripcion.getText().toString();
-                String fechaVencimiento = btnFecha.getText().toString();
-                String horaVencimiento = btnHora.getText().toString();
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(NotasDB.TareasDatabase.COLUMN_NAME_COL1, nombre);
-                contentValues.put(NotasDB.TareasDatabase.COLUMN_NAME_COL2, descripcion);
-                contentValues.put(NotasDB.TareasDatabase.COLUMN_NAME_COL6, fechaVencimiento);
-                contentValues.put(NotasDB.TareasDatabase.COLUMN_NAME_COL7, horaVencimiento);
-                long rowID = db.insert(NotasDB.TareasDatabase.TABLE_NAME, null, contentValues);
-                if (rowID != -1) {
-                    for (Calendar c : listaCalendario) {
-                        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-                        Intent intent = new Intent(this, BootReceiver.class);
-                        intent.putExtra("Titulo", nombre);
-                        intent.putExtra("Descripcion", descripcion);
-                        /*Fecha*/
-                        int month = c.get(Calendar.MONTH);
-                        int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
-                        int year = c.get(Calendar.YEAR);
-                        final int mesActual = month + 1;
-                        String diaFormateado = (dayOfMonth < 10)? "0" + String.valueOf(dayOfMonth):String.valueOf(dayOfMonth);
-                        String mesFormateado = (mesActual < 10)? "0" + String.valueOf(mesActual):String.valueOf(mesActual);
-                        intent.putExtra("Fecha", diaFormateado + "/" + mesFormateado + "/" + year);
-                        /*Hora*/
-                        int hourOfDay = c.get(Calendar.HOUR_OF_DAY);
-                        int minute = c.get(Calendar.MINUTE);
-                        String horaFormateada =  (hourOfDay < 10)? String.valueOf("0" + hourOfDay) : String.valueOf(hourOfDay);
-                        String minutoFormateado = (minute < 10)? String.valueOf("0" + minute):String.valueOf(minute);
-                        String AM_PM;
-                        if(hourOfDay < 12) {
-                            AM_PM = "a.m.";
-                        } else {
-                            AM_PM = "p.m.";
-                        }
-                        intent.putExtra("Hora", horaFormateada + ":" + minutoFormateado + " " + AM_PM);
-                        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-                        alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+            String nombre = txtNombre.getText().toString();
+            String descripcion = txtDescripcion.getText().toString();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(NotasDB.TareasDatabase.COLUMN_NAME_COL1, nombre);
+            contentValues.put(NotasDB.TareasDatabase.COLUMN_NAME_COL2, descripcion);
+            contentValues.put(NotasDB.TareasDatabase.COLUMN_NAME_COL6, "true");
+            long rowID = db.insert(NotasDB.TareasDatabase.TABLE_NAME, null, contentValues);
+            if (rowID != -1) {
+                for (Calendar c : listaCalendario) {
+                    AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+                    Intent intent = new Intent(this, BootReceiver.class);
+                    intent.putExtra("Id", rowID);
+                    intent.putExtra("Titulo", nombre);
+                    intent.putExtra("Descripcion", descripcion);
+                    /*Fecha*/
+                    int month = c.get(Calendar.MONTH);
+                    int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
+                    int year = c.get(Calendar.YEAR);
+                    final int mesActual = month + 1;
+                    String diaFormateado = (dayOfMonth < 10)? "0" + String.valueOf(dayOfMonth):String.valueOf(dayOfMonth);
+                    String mesFormateado = (mesActual < 10)? "0" + String.valueOf(mesActual):String.valueOf(mesActual);
+                    intent.putExtra("Fecha", diaFormateado + "/" + mesFormateado + "/" + year);
+                    /*Hora*/
+                    int hourOfDay = c.get(Calendar.HOUR_OF_DAY);
+                    int minute = c.get(Calendar.MINUTE);
+                    String horaFormateada =  (hourOfDay < 10)? String.valueOf("0" + hourOfDay) : String.valueOf(hourOfDay);
+                    String minutoFormateado = (minute < 10)? String.valueOf("0" + minute):String.valueOf(minute);
+                    String AM_PM;
+                    if(hourOfDay < 12) {
+                        AM_PM = "a.m.";
+                    } else {
+                        AM_PM = "p.m.";
                     }
-                    Toast.makeText(this, "Tarea registrada exitosamente", Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                }else{
-                    Toast.makeText(this, "Error al registrar la nota", Toast.LENGTH_SHORT).show();
+                    intent.putExtra("Hora", horaFormateada + ":" + minutoFormateado + " " + AM_PM);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
                 }
-            }
+                Toast.makeText(this, "Tarea registrada exitosamente", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }else{ Toast.makeText(this, "Error al registrar la nota", Toast.LENGTH_SHORT).show(); }
         });
 
         btnRecordatorio.setOnClickListener(view -> {

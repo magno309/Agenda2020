@@ -12,10 +12,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,6 +99,25 @@ public class NotasFragment extends Fragment implements ListenerNotaI {
         c1.close();
         adaptadorNotas = new AdaptadorNotas(getActivity(), listaNotas, this);
         recyclerView.setAdapter(adaptadorNotas);
+        EditText txtBuscarNotas = getActivity().findViewById(R.id.txt_buscar);
+        txtBuscarNotas.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                adaptadorNotas.cancelTimer();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(listaNotas.size() != 0){
+                    adaptadorNotas.buscarNotas(editable.toString());
+                }
+            }
+        });
         return view;
     }
 
